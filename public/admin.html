@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory Management System</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-boxes"></i>
+                    <span>InventoryPro</span>
+                </div>
+                <button class="sidebar-toggle" id="adminSidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-view="adminDashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-view="adminCreateUser">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Create User</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-view="adminList">
+                            <i class="fa-solid fa-users"></i>
+                            <span>User List</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">Admin</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" id="adminMobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title" id="adminPageTitle">Dashboard</h1>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-actions">
+                        <button class="action-btn" id="adminThemeToggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <button class="action-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Views -->
+            <main class="content" id="adminMainContent">
+                <!-- Dashboard View -->
+                <div class="view active" id="adminDashboardView">
+                    <h1>Inventory Dashboard</h1>
+                    <section class="stats" id="adminDashboardStats"></section>
+                    <section class="charts">
+                        <div class="chart-container">
+                            <canvas id="adminStockBarChart" width="500" height="400"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="adminCategoryPieChart" width="500" height="400"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="adminStockTrendChart" height="300"></canvas>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Create User View -->
+                <div class="view" id="adminCreateUserView">
+                    <div class="view-header">
+                        <h2>Create employee data</h2>
+                    </div>
+
+                    <form id="userForm" class="modal-body-transaction" style="margin: 10% 10% 0 10%">
+                        <div class="form-row-transaction">
+
+                            <!-- Name -->
+                            <div class="form-group-transaction">
+                                <label for="name">Name *</label>
+                                <input type="text" id="name" name="name" required autocomplete="off" />
+                            </div>
+
+                            <!-- Email -->
+                            <div class="form-group-transaction">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required autocomplete="off" />
+                            </div>
+
+                            <!-- Password -->
+                            <div class="form-group-transaction">
+                                <label for="password">Password *</label>
+                                <input type="password" id="password" name="password" required />
+                            </div>
+
+                            <!-- Role -->
+                            <div class="form-group-transaction">
+                                <label for="role">Role *</label>
+                                <select id="role" name="role" required>
+                                    <option value="staff" selected>Staff</option>
+                                    <option value="manager">Manager</option>
+                                </select>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="form-group-transaction" style="margin-top: 20px;">
+                                <button type="submit" id="submitUserBtn">
+                                    <i class="fa-solid fa-user-plus"></i> Submit User
+                                </button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+
+                <!-- User List View -->
+                <div class="view" id="adminListView">
+                    <div class="view-header">
+                        <h2>Employee List Management</h2>
+                    </div>
+                    <div class="table-container">
+                        <table id="userTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Password</th>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTableBody">
+                                <!-- User data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <div class="footer-left">
+                        <p>&copy; 2025 InventoryPro. All rights reserved.</p>
+                        <div class="footer-links">
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms of Service</a>
+                            <a href="#">Support</a>
+                        </div>
+                    </div>
+                    <div class="footer-right">
+                        <div class="footer-info">
+                            <span>Version 2.1.0</span>
+                            <span>Last updated: <span id="adminLastUpdated">June 2025</span></span>
+                        </div>
+                        <div class="footer-social">
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>

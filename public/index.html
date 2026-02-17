@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-boxes"></i>
+                    <span>InventoryPro</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-view="dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-view="inventory">
+                            <i class="fas fa-boxes"></i>
+                            <span>Inventory</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-view="categories">
+                            <i class="fas fa-tags"></i>
+                            <span>Categories</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-view="suppliers">
+                            <i class="fas fa-truck"></i>
+                            <span>Suppliers</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-view="orders">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Purchase Orders</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-view="reports">
+                            <i class="fas fa-sack-dollar"></i>
+                            <span>Sale products</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-view="settings">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <span>Transactions</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name"></span>
+                        <span class="user-role"></span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                </div>
+
+                <div class="header-right">
+
+                    <div class="header-actions">
+
+                        <button class="action-btn" id="themeToggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <button class="action-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content" id="mainContent">
+                <div class="view active" id="dashboardView">
+
+                    <h1>Inventory Dashboard</h1>
+
+                    <section class="stats" id="dashboardStats">
+
+                    </section>
+
+                    <section class="charts">
+                        <div class="chart-container">
+                            <canvas id="stockBarChart" width="500" height="400"></canvas>
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="categoryPieChart" width="500" height="400"></canvas>
+                        </div>
+
+                        <div class="chart-container">
+                            <canvas id="stockTrendChart" height="300"></canvas>
+                        </div>
+                    </section>
+
+                </div>
+
+
+
+                <!-- Inventory View -->
+                <div class="view" id="inventoryView">
+                    <div class="view-header">
+                        <h2>Inventory Management</h2>
+                        <div class="view-actions">
+                            <button class="btn-secondary" id="exportBtn">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                            <button class="btn-primary" id="addItemBtn">
+                                <i class="fas fa-plus"></i> Add Item
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <input type="text" id="searchInput" placeholder="Search items..." class="filter-input">
+                        </div>
+                        <div class="filter-group">
+                            <select id="categoryFilter" class="filter-select">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <button class="btn-secondary" id="bulkActionsBtn">
+                                <i class="fas fa-tasks"></i> Bulk Actions
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table" id="inventoryTable">
+                            <thead>
+                                <tr>
+                                    <th>SKU <i class="fas fa-sort"></i></th>
+                                    <th>Name <i class="fas fa-sort"></i></th>
+                                    <th>Category <i class="fas fa-sort"></i></th>
+                                    <th>Quantity <i class="fas fa-sort"></i></th>
+                                    <th>Price <i class="fas fa-sort"></i></th>
+                                    <th>Value <i class="fas fa-sort"></i></th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTableBody">
+                                <!-- Table rows will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Categories View -->
+                <div class="view" id="categoriesView">
+                    <div class="view-header">
+                        <h2>Categories Management</h2>
+                        <button class="btn-primary" id="addCategoryBtn">
+                            <i class="fas fa-plus"></i> Add Category
+                        </button>
+                    </div>
+
+                    <div class="categories-grid" id="categoriesGrid">
+                        <!-- Categories will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Suppliers View -->
+                <div class="view" id="suppliersView">
+                    <div class="view-header">
+                        <h2>Suppliers Management</h2>
+                        <button class="btn-primary" id="addSupplierBtn">
+                            <i class="fas fa-plus"></i> Add Supplier
+                        </button>
+                    </div>
+
+                    <div class="suppliers-list" id="suppliersList">
+                        <!-- Suppliers will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Orders View -->
+                <div class="view" id="ordersView">
+                    <div class="view-header">
+                        <h2>Purchase Orders</h2>
+
+                    </div>
+                    <form id="transactionForm" class="modal-body-transaction">
+                        <div class="form-row-transaction">
+
+                            <!-- Product Name with suggestions -->
+                            <div class="form-group-transaction">
+                                <label for="productName">Product Name *</label>
+                                <input type="text" id="productName" required autocomplete="off">
+                                <ul id="suggestionList" class="suggestion-list"></ul>
+                            </div>
+
+                            <!-- SKU will auto-fill -->
+                            <div class="form-group-transaction">
+                                <label for="transactionSku">SKU *</label>
+                                <input type="text" id="transactionSku" required readonly>
+                            </div>
+
+                            <!-- Transaction type -->
+                            <div class="form-group-transaction">
+                                <label for="transactionType">Type *</label>
+                                <select id="transactionType" required readonly>
+                                    <option value="in" selected>Purchase (In)</option>
+                                </select>
+                            </div>
+
+                            <!-- Quantity -->
+                            <div class="form-group-transaction">
+                                <label for="transactionQuantity">Quantity *</label>
+                                <input type="number" id="transactionQuantity" min="1" required>
+                            </div>
+
+                            <div class="form-group-transaction">
+                                <label for="transactionPrice">Price Per Unit *</label>
+                                <input type="number" id="transactionPrice" min="0" step="0.01">
+                            </div>
+
+
+                            <!-- Optional Note -->
+                            <div class="form-group-transaction">
+                                <label for="transactionNote">Note</label>
+                                <input type="text" id="transactionNote" placeholder="Any additional info">
+                            </div>
+
+                            <!-- Submit Button --> <br><br>
+                            <div class="form-group-transaction" style="margin-top: 20px;">
+                                <button type="submit" id="submitTransactionBtn"><i
+                                        class="fa-solid fa-hand-holding-dollar"></i> Submit Transaction</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Reports View -->
+                <div class="view" id="reportsView">
+                    <div class="view-header">
+                        <h2>Sale Products</h2>
+
+                    </div>
+                    <form id="saleForm" class="modal-body-transaction">
+                        <div class="form-row-transaction">
+
+                            <!-- Product Name with suggestions -->
+                            <div class="form-group-transaction">
+                                <label for="saleProductName">Product Name *</label>
+                                <input type="text" id="saleProductName" required autocomplete="off">
+                                <ul id="saleSuggestionList" class="suggestion-list"></ul>
+                            </div>
+
+                            <!-- SKU will auto-fill -->
+                            <div class="form-group-transaction">
+                                <label for="saleSku">SKU *</label>
+                                <input type="text" id="saleSku" required readonly>
+                            </div>
+
+                            <div class="form-group-transaction">
+                                <label for="units">Available unit *</label>
+                                <input type="text" id="units" required readonly>
+                            </div>
+
+                            <!-- Transaction type -->
+                            <div class="form-group-transaction">
+                                <label for="saleType">Type *</label>
+                                <select id="saleType" required readonly>
+                                    <option value="out" selected>Sale (out)</option>
+                                </select>
+                            </div>
+
+                            <!-- Quantity -->
+                            <div class="form-group-transaction">
+                                <label for="saleQuantity">Quantity *</label>
+                                <input type="number" id="saleQuantity" min="1" required>
+                            </div>
+
+                            <div class="form-group-transaction">
+                                <label for="salePrice">Price Per Unit *</label>
+                                <input type="number" id="salePrice" min="0" step="0.01">
+                            </div>
+
+                            <!-- Optional Customer Name -->
+                            <div class="form-group-transaction">
+                                <label for="saleCustomerName">Customer Name</label>
+                                <input type="text" id="saleCustomerName" placeholder="Optional for sales">
+                            </div>
+
+                            <!-- Optional Customer Contact -->
+                            <div class="form-group-transaction">
+                                <label for="saleCustomerContact">Customer Contact</label>
+                                <input type="text" id="saleCustomerContact" placeholder="Optional for sales">
+                            </div>
+
+                            <!-- Optional Note -->
+                            <div class="form-group-transaction">
+                                <label for="saleNote">Note</label>
+                                <input type="text" id="saleNote" placeholder="Any additional info">
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="form-group-transaction" style="margin-top: 20px;">
+                                <button type="submit" id="saleSubmitBtn"><i class="fa-solid fa-receipt"></i>
+                                    Submit Transaction</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+
+                <!-- Settings View -->
+                <div class="view" id="settingsView">
+                    <div class="view-header">
+                        <h2>History of Transactions</h2>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table" id="historyTable">
+                            <thead>
+                                <tr>
+                                    <th>SKU <i class="fas fa-sort"></i></th>
+                                    <th>Date <i class="fas fa-sort"></i></th>
+                                    <th>Name <i class="fas fa-sort"></i></th>
+                                    <th>Quantity <i class="fas fa-sort"></i></th>
+                                    <th>Type <i class="fas fa-sort"></i></th>
+                                    <th>Price(Buy) <i class="fas fa-sort"></i></th>
+                                    <th>Customer Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody" style="scroll-behavior: smooth;">
+                                <!-- Table rows will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-content">
+                    <div class="footer-left">
+                        <p>&copy; 2025 InventoryPro. All rights reserved.</p>
+                        <div class="footer-links">
+                            <a href="#">Privacy Policy</a>
+                            <a href="#">Terms of Service</a>
+                            <a href="#">Support</a>
+                        </div>
+                    </div>
+
+                    <div class="footer-right">
+                        <div class="footer-info">
+                            <span>Version 2.1.0</span>
+                            <span>Last updated: <span id="lastUpdated"></span></span>
+                        </div>
+                        <div class="footer-social">
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Item</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="itemForm" class="modal-body">
+                <input type="hidden" id="itemId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="itemName">Item Name *</label>
+                        <input type="text" id="itemName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemSKU">SKU</label>
+                        <input type="text" id="itemSKU" readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="itemCategory">Category *</label>
+                        <select id="itemCategory" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemSupplier">Supplier</label>
+                        <select id="itemSupplier">
+                            <option value="">Select Supplier</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="itemQuantity">Quantity *</label>
+                        <input type="number" id="itemQuantity" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemPrice">Price *</label>
+                        <input type="number" id="itemPrice" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sellingPrice">Selling Price</label>
+                        <input type="number" id="sellingPrice" min="0">
+                    </div>
+
+                </div>
+
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                <button type="submit" id="itemFormSubmit" class="btn-primary">Save Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category edit -->
+    <div id="categoryModal" class="modal-category">
+        <div class="modal-content-category large-category">
+            <div class="modal-header-category">
+                <h2 id="modalTitleCategory">Add New Category</h2>
+                <button class="modal-close-category">&times;</button>
+            </div>
+            <form id="categoryForm" class="modal-body-category">
+                <div class="form-row-category">
+                    <div class="form-group-category">
+                        <label for="categoryIdType">Category Id *</label>
+                        <input type="text" id="categoryIdType" readonly>
+                    </div>
+
+                    <div class="form-group-category">
+                        <label for="categoryName">Category Name *</label>
+                        <input type="text" id="categoryName" required>
+                    </div>
+
+                    <div class="form-group-category">
+                        <label for="categoryDescription">Description</label>
+                        <input type="text" id="categoryDescription">
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer-category">
+                <button type="button" class="btn-secondary-category" id="cancelCategoryBtn">Cancel</button>
+                <button type="submit" id="saveData" class="btn-primary-category">Save Category</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="supplierModal" class="modal-supplier">
+        <div class="modal-content-supplier large-supplier">
+            <div class="modal-header-supplier">
+                <h2 id="modalTitleSupplier">Add New Supplier</h2>
+                <button class="modal-close-supplier">&times;</button>
+            </div>
+            <form id="supplierForm" class="modal-body-supplier">
+                <div class="form-row-supplier">
+                    <div class="form-group-supplier">
+                        <label for="supplierId">Supplier Id *</label>
+                        <input type="text" id="supplierId" readonly>
+                    </div>
+
+                    <div class="form-group-supplier">
+                        <label for="supplierName">Name *</label>
+                        <input type="text" id="supplierName" required>
+                    </div>
+
+                    <div class="form-group-supplier">
+                        <label for="supplierContact">Contact</label>
+                        <input type="text" id="supplierContact">
+                    </div>
+
+                    <div class="form-group-supplier">
+                        <label for="supplierCompany">Company</label>
+                        <input type="text" id="supplierCompany">
+                    </div>
+
+                    <div class="form-group-supplier">
+                        <label for="supplierEmail">Email</label>
+                        <input type="email" id="supplierEmail">
+                    </div>
+
+                    <div class="form-group-supplier">
+                        <label for="supplierAddress">Address</label>
+                        <input type="text" id="supplierAddress">
+                    </div>
+                </div>
+            </form>
+            <div class="modal-footer-supplier">
+                <button type="button" class="btn-secondary-supplier" id="cancelSupplierBtn">Cancel</button>
+                <button type="submit" id="saveSupplierData" class="btn-primary-supplier">Save Supplier</button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login User</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .auth-subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            margin-right: 0.5rem;
+            accent-color: #3b82f6;
+        }
+
+        .forgot-password {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-password:hover {
+            color: #2563eb;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-bottom: 1rem;
+        }
+
+        .submit-btn:hover {
+            background: #2563eb;
+        }
+
+        .auth-switch {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .auth-switch-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .auth-switch-link:hover {
+            color: #2563eb;
+        }
+
+
+        .toast-base {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            color: #374151;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, top 0.4s ease;
+            z-index: 1000;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 200px;
+        }
+
+        .toast-base.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .toast-success .toast-icon {
+            background-color: #10b981;
+        }
+
+        .toast-success .toast-icon i {
+            color: white;
+        }
+
+        .toast-error .toast-icon {
+            background-color: #ef4444;
+        }
+
+        .toast-error .toast-icon i {
+            color: white;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .success-btn {
+            background: #10b981;
+        }
+
+        .success-btn:hover {
+            background: #059669;
+        }
+
+        .error-btn {
+            background: #ef4444;
+        }
+
+        .error-btn:hover {
+            background: #dc2626;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to your account</p>
+        </div>
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-input"
+                    placeholder="Enter your password" required>
+            </div>
+            <button id="submit" class="submit-btn">Sign In</button>
+        </form>
+    </div>
+    <script>
+
+        document.getElementById("submit").addEventListener("click", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            try {
+                const res = await fetch("/api/user/login/user", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    successToast(data.message);
+                    window.location.href = "index.html";
+                }else {
+                    errorToast(data.message)
+                }
+
+            } catch (error) {
+                console.log(error);
+
+            }
+        });
+
+        function removeExistingToast(id) {
+            const existing = document.getElementById(id);
+            if (existing) existing.remove();
+        }
+
+        function successToast(message) {
+            removeExistingToast("success-toast");
+
+            const toast = document.createElement("div");
+            toast.className = "toast-base toast-success show";
+            toast.id = "success-toast";
+
+            const icon = document.createElement("div");
+            icon.className = "toast-icon";
+            icon.innerHTML = '<i class="fas fa-check"></i>';
+
+            const msg = document.createElement("div");
+            msg.className = "toast-message";
+            msg.textContent = message;
+
+            toast.appendChild(icon);
+            toast.appendChild(msg);
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        function errorToast(message) {
+            removeExistingToast("error-toast");
+
+            const toast = document.createElement("div");
+            toast.className = "toast-base toast-error show";
+            toast.id = "error-toast";
+
+            const icon = document.createElement("div");
+            icon.className = "toast-icon";
+            icon.innerHTML = '<i class="fas fa-times"></i>';
+
+            const msg = document.createElement("div");
+            msg.className = "toast-message";
+            msg.textContent = message;
+
+            toast.appendChild(icon);
+            toast.appendChild(msg);
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
