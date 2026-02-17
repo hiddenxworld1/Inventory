@@ -8,28 +8,36 @@ import productRouter from "./routes/product.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-dotenv.config();
+
 app.use(cookieParser());
 app.use(express.json());
-
-
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/admin", router);
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 
-async function main() {
-  await mongoose.connect(process.env.MONGO_URL);
-  console.log("Database connected");
-  app.listen(3000, () => {
-    console.log("http://localhost:3000");
-  });
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("Database connected");
+
+    const PORT = process.env.PORT || 3000;
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("Startup error:", error);
+    process.exit(1);
+  }
 }
 
-main();
+startServer();
