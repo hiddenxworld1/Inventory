@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import adminModel from "../model/db.js"
 
-JWT_SECRET_ADMIN="helloworld"
 
 export async function protectRoute(req, res, next){
   try {
@@ -11,7 +10,7 @@ export async function protectRoute(req, res, next){
       return res.status(401).json({ message: "Unauthorized - No Token Provided" });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET_ADMIN);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_ADMIN);
 
     if (!decoded) {
       return res.status(401).json({ message: "Unauthorized - Invalid Token" });
