@@ -4,7 +4,7 @@ import adminModel from "../model/db.js"
 
 export async function protectRoute(req, res, next){
   try {
-    const token = req.cookies.jwt;
+    const token = req.cookies.admin;
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized - No Token Provided" });
