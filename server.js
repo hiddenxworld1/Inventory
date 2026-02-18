@@ -23,16 +23,16 @@ app.use("/api/admin", router);
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 
-app.get("/", (req, res)=>{
+app.get("/test", (req, res)=>{
   res.json({msg:"Server is running."})
 })
 
 async function startServer() {
   try {
-    await mongoose.connect(process.env.MONGO_URL);
+    await mongoose.connect("mongodb+srv://hiddenxworld_db_user:bJPMNXFdJuSqgyJ9@cluster0.5lepnmw.mongodb.net/Inventry");
     console.log("Database connected");
 
-    const PORT = process.env.PORT || 8080;
+    const PORT = 8080;
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
