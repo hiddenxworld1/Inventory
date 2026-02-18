@@ -23,6 +23,10 @@ app.use("/api/admin", router);
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 
+app.get("/", (req, res)=>{
+  res.json({msg:"Server is running."})
+})
+
 async function startServer() {
   try {
     await mongoose.connect(process.env.MONGO_URL);
