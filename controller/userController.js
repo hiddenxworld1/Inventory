@@ -2,148 +2,212 @@ import { User, Supplier } from "../model/employee.js";
 import bcrypt from "bcrypt";
 import { userToken } from "../lib/utils.js";
 
+/* =========================
+   USER LOGIN
+========================= */
 export const userLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+
+    // normalize email (VERY IMPORTANT)
+    email = email.trim().toLowerCase();
+
     const user = await User.findOne({ email });
     if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User not found" });
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    const comPassword = await bcrypt.compare(password, user.password);
-    if (!comPassword) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Incorrect password." });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect password",
+      });
     }
 
+    // generate token
     userToken(user._id, res);
-    res.json({ success: true, message: "User signed up." });
+
+    res.json({
+      success: true,
+      message: "Login successful",
+      role: user.role,
+    });
   } catch (error) {
-    console.error("User login Error:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal server error." });
+    console.error("User login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
-
+/* =========================
+   CREATE SUPPLIER
+========================= */
 export const createSupliers = async (req, res) => {
   try {
     let { name, contact, email, address, company } = req.body;
 
-    if (!email || !contact || !name || !address || !company) {
-      return res.status(400).json({ success: false, message: "Missing required fields." });
+    if (!name || !contact || !email || !address || !company) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
     }
 
     email = email.trim().toLowerCase();
     name = name.trim();
-    company = company?.trim();
-    address = address?.trim();
+    address = address.trim();
+    company = company.trim();
 
-    // Check if supplier exists
-    const supplier = await Supplier.findOne({ email });
-    if (supplier) {
-      return res.status(409).json({ success: false, message: "Supplier already exists." });
+    const existingSupplier = await Supplier.findOne({ email });
+    if (existingSupplier) {
+      return res.status(409).json({
+        success: false,
+        message: "Supplier already exists",
+      });
     }
 
-    if (typeof contact !== "string") contact = contact.toString();
+    contact = contact.toString();
     if (!/^\d{10}$/.test(contact)) {
-      return res.status(400).json({ success: false, message: "Contact must be a 10-digit number." });
+      return res.status(400).json({
+        success: false,
+        message: "Contact must be a 10-digit number",
+      });
     }
 
-    const createSup = await Supplier.create({
+    const supplier = await Supplier.create({
       name,
       contact,
       email,
-      company,
       address,
+      company,
     });
 
     res.status(201).json({
       success: true,
-      message: "Supplier data saved.",
-      supplier: {
-        createSup: createSup
-      },
+      message: "Supplier created successfully",
+      supplier,
     });
   } catch (error) {
     console.error("Supplier creation error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error." });
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
-
+/* =========================
+   UPDATE SUPPLIER
+========================= */
 export const updateSuppliers = async (req, res) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
     let { name, contact, email, address, company } = req.body;
-    email = email.trim().toLowerCase();
-    name = name.trim();
-    company = company?.trim();
-    address = address?.trim();
 
-    const supplier = await Supplier.findOne({ email });
+    if (email) email = email.trim().toLowerCase();
+    if (name) name = name.trim();
+    if (address) address = address.trim();
+    if (company) company = company.trim();
+
+    const supplier = await Supplier.findById(id);
     if (!supplier) {
-      return res.status(409).json({ success: false, message: "Supplier not exists." });
+      return res.status(404).json({
+        success: false,
+        message: "Supplier not found",
+      });
     }
 
-    if (typeof contact !== "string") contact = contact.toString();
-    if (!/^\d{10}$/.test(contact)) {
-      return res.status(400).json({ success: false, message: "Contact must be a 10-digit number." });
-    }
-    const updateData = {};
-    if (name && name !== supplier.name) {
-      updateData.name = name;
+    if (contact) {
+      contact = contact.toString();
+      if (!/^\d{10}$/.test(contact)) {
+        return res.status(400).json({
+          success: false,
+          message: "Contact must be a 10-digit number",
+        });
+      }
+      supplier.contact = contact;
     }
 
-    if (contact && contact !== supplier.contact) {
-      updateData.contact = contact;
-    }
-    if (email && email !== supplier.email) {
-      updateData.email = email;
-    }
-    if (address && address !== supplier.address) {
-      updateData.address = address;
-    }
-    if (company && company !== supplier.company) {
-      updateData.company = company;
-    }
-    const updatedSup = await Supplier.findByIdAndUpdate(id, updateData, { new: true });
-    res.json({ success: true, message: "Supplier updated", updatedSup });
+    if (name) supplier.name = name;
+    if (email) supplier.email = email;
+    if (address) supplier.address = address;
+    if (company) supplier.company = company;
+
+    await supplier.save();
+
+    res.json({
+      success: true,
+      message: "Supplier updated successfully",
+      supplier,
+    });
   } catch (error) {
-    console.error("Supplier updation error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error." });
+    console.error("Supplier update error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
-}
+};
 
-
-export const getUserDetails= async (req,res) => {
+/* =========================
+   GET USER DETAILS
+========================= */
+export const getUserDetails = async (req, res) => {
   try {
-    const userId=req.user._id;
-    const user=await User.findById(userId);
-    if(!user){
-        return res.status(409).json({ success: false, message: "User not exists." });
-    }
-    res.json({success:true, message:"User details fetched", user:user})
-  } catch (error) {
-    console.error("User fetching error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error." });
-  }
-}
+    const userId = req.user._id;
 
-export const deleteSupplier= async (req, res) => {
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "User details fetched",
+      user,
+    });
+  } catch (error) {
+    console.error("User fetch error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+/* =========================
+   DELETE SUPPLIER
+========================= */
+export const deleteSupplier = async (req, res) => {
   try {
     const { id } = req.body;
-    const deleted = await Supplier.findByIdAndDelete(id);
-    if (!deleted) {
-      return res.status(404).json({ success: false, message: "Supplier not found" });
+
+    const deletedSupplier = await Supplier.findByIdAndDelete(id);
+    if (!deletedSupplier) {
+      return res.status(404).json({
+        success: false,
+        message: "Supplier not found",
+      });
     }
-    res.json({ success: true, message: "Supplier deleted successfully" });
+
+    res.json({
+      success: true,
+      message: "Supplier deleted successfully",
+    });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Server error", error });
+    console.error("Supplier delete error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
-}
+};
