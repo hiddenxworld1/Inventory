@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Authentication</title>
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login User</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
         :root {
@@ -33,6 +33,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
         .auth-container {
@@ -42,7 +43,7 @@
             padding: 2rem;
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
 
         .auth-header {
@@ -53,21 +54,24 @@
         .auth-title {
             font-size: 1.75rem;
             font-weight: 700;
+            margin-bottom: 0.5rem;
         }
 
         .auth-subtitle {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.875rem;
         }
 
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-label {
             display: block;
-            margin-bottom: 0.4rem;
-            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
         }
 
         .form-input {
@@ -76,7 +80,7 @@
             background: var(--bg-tertiary);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            color: white;
+            color: var(--text-primary);
             font-size: 1rem;
         }
 
@@ -89,11 +93,11 @@
             width: 100%;
             padding: 0.75rem;
             background: #3b82f6;
+            color: white;
             border: none;
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
-            color: white;
             cursor: pointer;
         }
 
@@ -102,7 +106,7 @@
         }
 
         /* Toast */
-        .toast {
+        .toast-base {
             position: fixed;
             top: 30px;
             left: 50%;
@@ -121,20 +125,20 @@
             z-index: 999;
         }
 
-        .toast.show {
+        .toast-base.show {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .toast.success .icon {
+        .toast-success .toast-icon {
             background: #10b981;
         }
 
-        .toast.error .icon {
+        .toast-error .toast-icon {
             background: #ef4444;
         }
 
-        .icon {
+        .toast-icon {
             width: 22px;
             height: 22px;
             border-radius: 50%;
@@ -148,36 +152,36 @@
 
 <body>
 
-<div class="auth-container">
-    <div class="auth-header">
-        <h1 class="auth-title">Welcome Back</h1>
-        <p class="auth-subtitle">Login to your account</p>
-    </div>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to your account</p>
+        </div>
 
-    <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" id="email" class="form-input" placeholder="Enter email">
-    </div>
+        <form>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" id="email" class="form-input" placeholder="Enter email" required>
+            </div>
 
-    <div class="form-group">
-        <label class="form-label">Password</label>
-        <input type="password" id="password" class="form-input" placeholder="Enter password">
-    </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Enter password" required>
+            </div>
 
-    <button id="submit" class="submit-btn">Sign In</button>
-</div>
+            <button id="submit" class="submit-btn">Sign In</button>
+        </form>
+    </div>
 
 <script>
-const btn = document.getElementById("submit");
-
-btn.addEventListener("click", async (e) => {
+document.getElementById("submit").addEventListener("click", async (e) => {
     e.preventDefault();
 
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
 
     if (!email || !password) {
-        showToast("Email & password required", "error");
+        errorToast("Email and password required");
         return;
     }
 
@@ -192,37 +196,45 @@ btn.addEventListener("click", async (e) => {
         const data = await res.json();
 
         if (data.success) {
-            showToast("Login successful", "success");
+            successToast(data.message || "Login successful");
 
             setTimeout(() => {
                 if (data.role === "admin") {
-                    window.location.href = "/admin/index.html";
+                    window.location.href = "/admin.html";
                 } else {
                     window.location.href = "/index.html";
                 }
             }, 1000);
+
         } else {
-            showToast(data.message, "error");
+            errorToast(data.message || "Login failed");
         }
 
     } catch (err) {
-        console.error(err);
-        showToast("Server error", "error");
+        errorToast("Server error");
     }
 });
 
-function showToast(msg, type) {
-    const old = document.querySelector(".toast");
+function successToast(message) {
+    showToast(message, "success");
+}
+
+function errorToast(message) {
+    showToast(message, "error");
+}
+
+function showToast(message, type) {
+    const old = document.querySelector(".toast-base");
     if (old) old.remove();
 
     const toast = document.createElement("div");
-    toast.className = `toast ${type} show`;
+    toast.className = `toast-base toast-${type} show`;
 
     toast.innerHTML = `
-        <div class="icon">
+        <div class="toast-icon">
             <i class="fas ${type === "success" ? "fa-check" : "fa-times"}"></i>
         </div>
-        <div>${msg}</div>
+        <div>${message}</div>
     `;
 
     document.body.appendChild(toast);

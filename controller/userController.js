@@ -9,14 +9,20 @@ export const userLogin = async (req, res) => {
   try {
     let { email, password } = req.body;
 
-    // normalize email (VERY IMPORTANT)
     email = email.trim().toLowerCase();
 
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "User not found",
+        message: "Invalid email or password",
+      });
+    }
+
+    if (!user.password) {
+      return res.status(401).json({
+        success: false,
+        message: "Password not set for this user",
       });
     }
 
@@ -24,11 +30,10 @@ export const userLogin = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: "Incorrect password",
+        message: "Invalid email or password",
       });
     }
 
-    // generate token
     userToken(user._id, res);
 
     res.json({
@@ -44,6 +49,7 @@ export const userLogin = async (req, res) => {
     });
   }
 };
+
 
 /* =========================
    CREATE SUPPLIER
